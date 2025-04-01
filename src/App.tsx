@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Upload, Image as ImageIcon, Download, Sun, Moon } from 'lucide-react';
 import cv from '@techstark/opencv-js';
+import github from "./assets/github.png"
 
 // Processing techniques
 const TECHNIQUES = {
@@ -330,7 +331,7 @@ function App() {
         >
           <p>Visit my GitHub</p>
           <img 
-            src="/src/assets/github.png" 
+            src={github} 
             alt="GitHub" 
             className="w-5 h-5"
           />
