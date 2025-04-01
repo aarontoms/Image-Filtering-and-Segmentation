@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Upload, Image as ImageIcon, Download } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Upload, Image as ImageIcon, Download, Sun, Moon } from 'lucide-react';
 import cv from '@techstark/opencv-js';
 
 // Processing techniques
@@ -22,6 +22,7 @@ function App() {
   const [processedImage, setProcessedImage] = useState<string | null>(null);
   const [selectedTechnique, setSelectedTechnique] = useState<string>('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
   const dropZoneRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -48,19 +49,19 @@ function App() {
     const handleDragOver = (e: DragEvent) => {
       e.preventDefault();
       e.stopPropagation();
-      dropZone.classList.add('border-blue-500');
+      dropZone.classList.add(isDarkMode ? 'border-blue-400' : 'border-blue-500');
     };
 
     const handleDragLeave = (e: DragEvent) => {
       e.preventDefault();
       e.stopPropagation();
-      dropZone.classList.remove('border-blue-500');
+      dropZone.classList.remove(isDarkMode ? 'border-blue-400' : 'border-blue-500');
     };
 
     const handleDrop = (e: DragEvent) => {
       e.preventDefault();
       e.stopPropagation();
-      dropZone.classList.remove('border-blue-500');
+      dropZone.classList.remove(isDarkMode ? 'border-blue-400' : 'border-blue-500');
 
       const files = e.dataTransfer?.files;
       if (files && files[0]) {
@@ -77,7 +78,7 @@ function App() {
       dropZone.removeEventListener('dragleave', handleDragLeave);
       dropZone.removeEventListener('drop', handleDrop);
     };
-  }, []);
+  }, [isDarkMode]);
 
   const handleImageUpload = (file: File) => {
     const reader = new FileReader();
@@ -159,18 +160,35 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className={`min-h-screen p-8 transition-colors duration-300 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-800 mb-8 text-center">
-          Image Processing & Segmentation
-        </h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className={`text-3xl font-bold mb-0 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+            Image Processing & Segmentation
+          </h1>
+          <button
+            onClick={() => setIsDarkMode(!isDarkMode)}
+            className={`p-2 rounded-full ${
+              isDarkMode 
+                ? 'bg-gray-700 hover:bg-gray-600 text-yellow-300' 
+                : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+            } transition-colors duration-300`}
+            aria-label="Toggle dark mode"
+          >
+            {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          </button>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Input Section */}
           <div className="space-y-6">
             <div
               ref={dropZoneRef}
-              className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center transition-colors duration-200 hover:border-blue-500 cursor-pointer"
+              className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors duration-200 cursor-pointer ${
+                isDarkMode 
+                  ? 'border-gray-700 hover:border-blue-400 bg-gray-800' 
+                  : 'border-gray-300 hover:border-blue-500 bg-white'
+              }`}
               onClick={() => document.getElementById('fileInput')?.click()}
             >
               {selectedImage ? (
@@ -183,8 +201,8 @@ function App() {
                 />
               ) : (
                 <div className="space-y-4">
-                  <Upload className="w-12 h-12 mx-auto text-gray-400" />
-                  <p className="text-gray-500">
+                  <Upload className={`w-12 h-12 mx-auto ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                  <p className={isDarkMode ? 'text-gray-400' : 'text-gray-500'}>
                     Drop your image here or click to upload
                   </p>
                 </div>
@@ -200,16 +218,18 @@ function App() {
 
             {/* Technique Selection */}
             <div className="space-y-4">
-              <h2 className="text-xl font-semibold text-gray-700">
+              <h2 className={`text-xl font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
                 Select Technique
               </h2>
               
               <div className="space-y-2">
-                <h3 className="font-medium text-gray-600">Filtering Techniques</h3>
+                <h3 className={`font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                  Filtering Techniques
+                </h3>
                 {Object.values(TECHNIQUES.FILTERING).map((technique) => (
                   <label
                     key={technique}
-                    className="block"
+                    className={`block ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}
                   >
                     <input
                       type="radio"
@@ -225,11 +245,13 @@ function App() {
               </div>
 
               <div className="space-y-2">
-                <h3 className="font-medium text-gray-600">Segmentation Techniques</h3>
+                <h3 className={`font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                  Segmentation Techniques
+                </h3>
                 {Object.values(TECHNIQUES.SEGMENTATION).map((technique) => (
                   <label
                     key={technique}
-                    className="block"
+                    className={`block ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}
                   >
                     <input
                       type="radio"
@@ -248,7 +270,13 @@ function App() {
             <button
               onClick={processImage}
               disabled={!selectedImage || !selectedTechnique || isProcessing}
-              className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-blue-600 transition-colors"
+              className={`w-full py-2 px-4 rounded-lg transition-colors ${
+                !selectedImage || !selectedTechnique || isProcessing
+                  ? 'bg-gray-300 cursor-not-allowed'
+                  : isDarkMode
+                    ? 'bg-blue-500 hover:bg-blue-600 text-white'
+                    : 'bg-blue-500 hover:bg-blue-600 text-white'
+              }`}
             >
               {isProcessing ? 'Processing...' : 'Process Image'}
             </button>
@@ -256,7 +284,9 @@ function App() {
 
           {/* Output Section */}
           <div className="space-y-6">
-            <div className="border-2 border-gray-300 rounded-lg p-8 min-h-[300px] flex items-center justify-center">
+            <div className={`border-2 rounded-lg p-8 min-h-[300px] flex items-center justify-center ${
+              isDarkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-300 bg-white'
+            }`}>
               {processedImage ? (
                 <img
                   src={processedImage}
@@ -264,9 +294,11 @@ function App() {
                   className="max-h-64"
                 />
               ) : (
-                <div className="text-center text-gray-500">
-                  <ImageIcon className="w-12 h-12 mx-auto mb-4" />
-                  <p>Processed image will appear here</p>
+                <div className="text-center">
+                  <ImageIcon className={`w-12 h-12 mx-auto mb-4 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                  <p className={isDarkMode ? 'text-gray-400' : 'text-gray-500'}>
+                    Processed image will appear here
+                  </p>
                 </div>
               )}
               <canvas ref={canvasRef} style={{ display: 'none' }} />
@@ -275,7 +307,13 @@ function App() {
             <button
               onClick={downloadImage}
               disabled={!processedImage}
-              className="w-full bg-green-500 text-white py-2 px-4 rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-green-600 transition-colors flex items-center justify-center gap-2"
+              className={`w-full py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 ${
+                !processedImage
+                  ? 'bg-gray-300 cursor-not-allowed'
+                  : isDarkMode
+                    ? 'bg-green-500 hover:bg-green-600 text-white'
+                    : 'bg-green-500 hover:bg-green-600 text-white'
+              }`}
             >
               <Download className="w-5 h-5" />
               Download Processed Image
