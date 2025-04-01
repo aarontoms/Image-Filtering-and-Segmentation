@@ -321,6 +321,22 @@ function App() {
           </div>
         </div>
       </div>
+      <div className="m-10 text-center justify-center">
+        <a
+          href="https://github.com/aarontoms/Image-Filtering-and-Segmentation"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-gray-600 text-l no-underline hover:no-underline flex items-center justify-center gap-2"
+        >
+          <p>Visit my GitHub</p>
+          <img 
+            src="/src/assets/github.png" 
+            alt="GitHub" 
+            className="w-5 h-5"
+          />
+        </a>
+      </div>
+
     </div>
   );
 }
