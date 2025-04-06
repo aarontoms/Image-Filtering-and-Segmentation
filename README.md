@@ -2,8 +2,6 @@
 
 A powerful, intuitive web application for real-time image processing and segmentation, built with React, TypeScript, and OpenCV.js.
 
-![App Screenshot](https://images.unsplash.com/photo-1633419461186-7d40a38105ec?auto=format&fit=crop&q=80&w=1200&h=600)
-
 ## ✨ Features
 
 - 🎨 Real-time image processing
